@@ -12,6 +12,7 @@ TagManager:
   - poolingMissile
   - alien
   - explosion
+  - inputPlayerName
   layers:
   - Default
   - TransparentFX
