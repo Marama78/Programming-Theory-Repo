@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9120402345210716502}
   - component: {fileID: 9120402345210716503}
-  - component: {fileID: 9120402345210716501}
+  - component: {fileID: 761196702540364615}
   m_Layer: 0
   m_Name: Missile
   m_TagString: playerMissile
@@ -45,9 +45,9 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.22313356, y: 1.0995983, z: 2.4032662}
-  m_Center: {x: 0.009959698, y: 0.82666606, z: 0.7016331}
---- !u!114 &9120402345210716501
+  m_Size: {x: 0.22313356, y: 1.0995983, z: 16.10125}
+  m_Center: {x: 0.009959698, y: 0.82666606, z: -0.1048758}
+--- !u!114 &761196702540364615
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,11 +56,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 9120402345210716489}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 601210fbd2b1e4847aed441892ae243c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4655a5df40cdfa3438d358398cdf2f0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceToPlayer: 20
-  speed: 20
+  typeOfMissile: 0
 --- !u!1001 &9120402344610978282
 PrefabInstance:
   m_ObjectHideFlags: 0

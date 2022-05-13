@@ -7,14 +7,15 @@ public class Bullets : MonoBehaviour
 
     private float distanceToPlayer = 30.0f;
     private float speed = 20.0f;
+    public int typeOfMissile = 0;
     // Start is called before the first frame update
-    void Start()
+      void Start()
     {
         
     }
 
     // Update is called once per frame
-    void Update()
+      void Update()
     {
 
         transform.Translate(Vector3.up * Time.deltaTime * speed);
@@ -24,15 +25,20 @@ public class Bullets : MonoBehaviour
         if (distance > distanceToPlayer) DisableObject();
     }
 
-    private void OnTriggerEnter(Collider other)
+     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("alien"))
+        if(other.gameObject.CompareTag("alien") && typeOfMissile==0)
+        {
+            DisableObject();
+        }
+
+        if (other.gameObject.CompareTag("player") && typeOfMissile == 1)
         {
             DisableObject();
         }
     }
 
-    private void DisableObject()
+    protected virtual void DisableObject()
     {
         transform.position = new Vector3(0, -20, 0);
         gameObject.SetActive(false);

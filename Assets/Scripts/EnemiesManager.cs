@@ -10,8 +10,8 @@ public class EnemiesManager : MonoBehaviour
     float speed = 0.01f;
     float DEFAULT_speed = 0.01f;
     //-- vertically
-    float startTop = 13.0f;
-    float topPosition = 4.0f;
+    float startTop = 11.0f;
+    float topPosition = 2.0f;
     float bottomPosition = -7.0f;
 
     //-- horizontally
@@ -21,6 +21,10 @@ public class EnemiesManager : MonoBehaviour
 
 
     public Transform RiserPosition;
+
+
+    private int patternAlienMovement = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +33,34 @@ public class EnemiesManager : MonoBehaviour
 
         BuildAllLines();
         StartCoroutine(MoveAliens());
+        StartCoroutine(AutoPatternAliens());
+
+      //  patternAlienMovement = Random.Range(2, 8);
+
     }
+
+
+
+    IEnumerator AutoPatternAliens()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(patternAlienMovement);
+
+            int indexAlien = Random.Range(0, aliens.Length);
+
+            aliens[indexAlien].GetComponent<Alien>().MakePattern();
+
+         patternAlienMovement = Random.Range(2, 8);
+            Debug.Log("made alien at " + indexAlien + " moves");
+         //   if (aliens == null) break;
+
+        }
+    }
+
+
+
+
 
     private void BuildAllLines()
     {
@@ -57,14 +88,16 @@ public class EnemiesManager : MonoBehaviour
         {
             GameObject newAlien = Instantiate(aliens[_indexAliensArray], RiserPosition);
 
-            newAlien.transform.position =
-                new Vector3((i * GameManager.Instance.horizontalEspacement) - limitationHorizontal, _positionY);
+             newAlien.transform.position =
+                 new Vector3((i * GameManager.Instance.horizontalEspacement) - limitationHorizontal, _positionY + 20);
+            
 
+            newAlien.GetComponent<Alien>().SetStartPosition(new Vector3((i * GameManager.Instance.horizontalEspacement) - limitationHorizontal, _positionY));
             newAlien.gameObject.SetActive(true);
         }
-       
 
 
+        GameManager.Instance.alienHorizontalState = -2;
     }
 
     private void DisableAllAliens()
@@ -90,7 +123,6 @@ public class EnemiesManager : MonoBehaviour
             GameManager.Instance.alienHorizontalState = temp;
 
             speed = DEFAULT_speed;
-            Debug.Log("" + GameManager.Instance.alienHorizontalState + "  :  " + temp);
         }
     }
 

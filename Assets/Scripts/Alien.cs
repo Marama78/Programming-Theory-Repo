@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class Alien : MonoBehaviour
 {
-    float limitationHorizontal = 1.0f;
 
-   /* Vector3 targetLeft;
-    Vector3 targetRight;*/
+    Vector3 vStartPosition;
     Vector3 targetMidle;
-  /*  Vector3 targetDown1;
-    Vector3 targetDown2;
-    Vector3 targetDown3;
-    Vector3 targetDown4;*/
+  
 
     Vector3 newposition;
     bool canMove = false;
@@ -20,20 +15,36 @@ public class Alien : MonoBehaviour
     float DEFAULT_speed = 0.01f;
     float espacementH;
     int oldMovementState = -100;
+
+    int currentExplosionParticles = 0;
+
+    int killObject = 0;
+
+    public int alienState = 0;
+    private int coroutineState = 0;
+
+    private int attackRate = 0;
+
     // Start is called before the first frame update
     void Start()
     {
+        attackRate = Random.Range(1, 3);
+
         newposition = transform.position;
         espacementH = GameManager.Instance.horizontalEspacement;
 
         StartCoroutine(EditTargets());
-        //StartCoroutine(MoveHorizontally());
     }
 
+   
+    public bool GetCanMove()
+    {
+        return canMove;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (canMove)
+        if (canMove && killObject==0 && alienState == 0)
         {
             if (oldMovementState != GameManager.Instance.alienHorizontalState)
             {
@@ -42,14 +53,89 @@ public class Alien : MonoBehaviour
 
             }
 
-            newposition = MoveAlien(GameManager.Instance.alienHorizontalState);
+            newposition = GetNewPosition(GameManager.Instance.alienHorizontalState);
 
             this.transform.position = Vector3.Lerp(transform.position, newposition, speed);
         }
+
+        ReadBehaviour();
+
+        if (killObject==1)
+        {
+            killObject = 2;
+            GameManager.Instance.currentExplosion++;
+
+            if (GameManager.Instance.currentExplosion > GameManager.Instance.explosionParticles.Length - 1)
+            {
+                GameManager.Instance.currentExplosion = 0;
+                currentExplosionParticles = 0;
+            }
+            else
+            {
+                currentExplosionParticles = GameManager.Instance.currentExplosion;
+
+            }
+
+            GameManager.Instance.explosionParticles[GameManager.Instance.currentExplosion].gameObject.transform.position = transform.position;
+            GameManager.Instance.explosionParticles[GameManager.Instance.currentExplosion].gameObject.SetActive(true);
+            StartCoroutine(AutoDestroyExplosion());
+            transform.GetChild(0).gameObject.SetActive(false);
+        }
+  
     }
 
-    
-    private Vector3 MoveAlien(int _state)
+    private void ReadBehaviour()
+    {
+
+        if (alienState == 1)
+        {
+            ReadyToEagle();
+            if (coroutineState == 0)
+            {
+                coroutineState = 1;
+                StartCoroutine(UpdateAlienState());
+            }
+        }
+        if (alienState == 2)
+        {
+            PatternEagleAttack();
+            if (coroutineState == 0)
+            {
+                coroutineState = 1;
+                StartCoroutine(UpdateAlienState());
+            }
+        }
+        if (alienState == 3)
+        {
+            RestorePosition();
+            if (coroutineState == 0)
+            {
+                coroutineState = 1;
+                StartCoroutine(UpdateAlienState());
+            }
+        }
+        if (alienState == 4)
+        {
+            if (coroutineState == 0)
+            {
+                coroutineState = 1;
+                StartCoroutine(UpdateAlienState());
+            }
+        }
+        if (alienState == 5)
+        {
+            RestoreEagle();
+            if (coroutineState == 0)
+            {
+                coroutineState = 1;
+                StartCoroutine(UpdateAlienState());
+            }
+        }
+
+
+    }
+   
+    private Vector3 GetNewPosition(int _state)
     {
         int iteration = 0;
         int pingpongState = 0;
@@ -95,6 +181,18 @@ public class Alien : MonoBehaviour
             case 11:
                 return targetMidle;
 
+            default:
+                Vector3 target = vStartPosition;
+
+                //-- correct the new position --
+                targetMidle = vStartPosition;
+
+                if (transform.position.x < vStartPosition.x) speed = 0;
+                if (transform.position.y < vStartPosition.y) speed = 0;
+
+
+                return target;
+               
         }
 
         float newPosX = targetMidle.x + espacementH * iteration;
@@ -125,62 +223,94 @@ public class Alien : MonoBehaviour
     }
 
 
-   /* IEnumerator MoveHorizontally()
+    public void SetStartPosition(Vector3 _startPosition)
     {
-        while (true)
+        vStartPosition = _startPosition;
+    }
+
+
+    private void ReadyToEagle()
+    {
+        float speedEagle = 0.1f;
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, -2), speedEagle);
+    }
+
+    private void PatternEagleAttack()
+    {
+        float speedEagle = 0.1f;
+        float speedForward = 10.0f;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, 180), speedEagle);
+
+        transform.Translate(Vector3.up * speedForward * Time.deltaTime);
+    }
+
+    private void RestorePosition()
+    {
+        float speedEagle = 0.1f;
+        transform.position = Vector3.Lerp(transform.position, new Vector3(newposition.x, newposition.y, -2), speedEagle);
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, 0), speedEagle);
+    }
+
+    private void RestoreEagle()
+    {
+        float speedEagle = 0.1f;
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, 0), speedEagle);
+       // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, 0), speedEagle);
+    }
+
+    IEnumerator UpdateAlienState()
+    {
+        yield return new WaitForSeconds(1.5f);
+        coroutineState = 0;
+        if (alienState != 0)
         {
-            yield return new WaitForSeconds(2.0f);
-
-            int temp = HorizontalState;
-            temp++;
-
-            if (temp > 11) temp = 0;
-            HorizontalState = temp;
-            speed = DEFAULT_speed;
-         //   Debug.Log("hori : " + HorizontalState);
+            alienState++;
+            if (alienState > 5) alienState = 0;
+        
         }
-    }*/
+    }
 
     IEnumerator EditTargets()
     {
+        //-- We must wait two seconds before the game starts --
+
         yield return new WaitForSeconds(2.0f);
 
         Vector3 temp = transform.position;
-
-        //targetLeft = temp;
-       // targetRight = temp;
         targetMidle = temp;
-        Debug.Log(targetMidle);
-
-       /* targetDown1 = temp;
-        targetDown2 = temp;
-        targetDown3 = temp;
-        targetDown4 = temp;
-
-
-        targetLeft = new Vector3(targetMidle.x - GameManager.Instance.horizontalEspacement, temp.y, 0);
-        
-        targetRight = new Vector3(targetMidle.x + GameManager.Instance.horizontalEspacement, temp.y, 0);
-
-        /*targetDown1.position = new Vector3(targetMidle.position.x, targetMidle.position.y + (GameManager.Instance.verticalEspacement), 0);
-        targetDown2.position = new Vector3(targetMidle.position.x, targetMidle.position.y + 2 * (GameManager.Instance.verticalEspacement), 0);
-        targetDown3.position = new Vector3(targetMidle.position.x, targetMidle.position.y + 3 * (GameManager.Instance.verticalEspacement), 0);
-        targetDown4.position = new Vector3(targetMidle.position.x, targetMidle.position.y + 4 * (GameManager.Instance.verticalEspacement), 0);
-
-        */
+     ///   Debug.Log(targetMidle);
         this.transform.position = targetMidle;
-       // this.transform.localScale = targetMidle.localScale;
         canMove = true;
 
-      ///  Debug.Log("targetLeft.x " + targetLeft.position.x);
     }
 
+    public void MakePattern()
+    {
+        Debug.Log("pattern is good");
+        if (canMove && alienState == 0)
+        {
+            alienState = 1;
+        Debug.Log("pattern starts");
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("playerMissile"))
         {
-            Destroy(gameObject);
+            killObject = 1;
+            GetComponent<BoxCollider>().enabled = false;
         }
     }
+
+
+    IEnumerator AutoDestroyExplosion()
+    {
+        yield return new WaitForSeconds(1.0f);
+    ///    Debug.Log("killed");
+        GameManager.Instance.explosionParticles[currentExplosionParticles].gameObject.SetActive(false);
+        Destroy(gameObject);
+
+    }
+
 }
