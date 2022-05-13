@@ -5,8 +5,8 @@ using UnityEngine;
 public class Bullets : MonoBehaviour
 {
 
-    public float distanceToPlayer = 20.0f;
-    public float speed = 200.0f;
+    private float distanceToPlayer = 30.0f;
+    private float speed = 20.0f;
     // Start is called before the first frame update
     void Start()
     {

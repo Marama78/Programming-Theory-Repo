@@ -8,6 +8,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     public GameObject player;
+
+    public float horizontalEspacement;
+    public float verticalEspacement;
+
+    public int alienHorizontalState = 0;
     private void Awake()
     {
         if(Instance!=null)
