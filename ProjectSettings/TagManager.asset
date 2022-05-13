@@ -9,6 +9,9 @@ TagManager:
   - body1
   - playerMissile
   - alienMissile
+  - poolingMissile
+  - alien
+  - explosion
   layers:
   - Default
   - TransparentFX
