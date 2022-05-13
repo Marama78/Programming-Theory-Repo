@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public int alienHorizontalState = -10;
 
+    public string playerName = string.Empty;
 
     public GameObject[] alienMissile;
     public int currentAlienMissile = 0;
@@ -21,21 +24,24 @@ public class GameManager : MonoBehaviour
     public GameObject[] explosionParticles;
     public int currentExplosion= 0;
 
-
+    public int totalAlien = 0;
     private void Awake()
     {
-        if(Instance!=null)
+        
+
+        if (Instance!=null)
         {
+            Debug.Log("Welcome " + playerName);
             GetDefaultValues();
             Destroy(gameObject);
         }
 
         Instance = this;
-
         player = GameObject.Find("Player");
 
         SetAlienMissile();
-        SetExplosions(); 
+        SetExplosions();
+
         DontDestroyOnLoad(Instance);
     }
 
@@ -48,21 +54,41 @@ public class GameManager : MonoBehaviour
 
     public void SetAlienMissile()
     {
-        alienMissile = GameObject.FindGameObjectsWithTag("alienMissile");
+        GameManager.Instance.alienMissile = GameObject.FindGameObjectsWithTag("alienMissile");
 
         for (int i = 0; i < alienMissile.Length; i++)
         {
-            alienMissile[i].gameObject.SetActive(false);
+            GameManager.Instance.alienMissile[i].gameObject.SetActive(false);
         }
     }
 
     public void SetExplosions()
     {
-        explosionParticles = GameObject.FindGameObjectsWithTag("explosion");
+        GameManager.Instance.explosionParticles = GameObject.FindGameObjectsWithTag("explosion");
 
         for (int i=0; i<explosionParticles.Length;i++)
         {
-            explosionParticles[i].gameObject.SetActive(false);
+            GameManager.Instance.explosionParticles[i].gameObject.SetActive(false);
+        }
+    }
+
+    public void StartNewGame()
+    {
+        GameObject input = GameObject.FindGameObjectWithTag("inputPlayerName");
+
+        string name = input.GetComponent<TextMeshProUGUI>().text;
+
+        if (name.Length > 0)
+        {
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (i == 0)
+                    playerName += name[i].ToString().ToUpper();
+                else
+                    playerName += name[i];
+            }
+
+            SceneManager.LoadScene(1);
         }
     }
 }

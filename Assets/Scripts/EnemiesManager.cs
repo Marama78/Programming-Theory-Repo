@@ -34,7 +34,6 @@ public class EnemiesManager : MonoBehaviour
         BuildAllLines();
         StartCoroutine(MoveAliens());
         StartCoroutine(AutoPatternAliens());
-
       //  patternAlienMovement = Random.Range(2, 8);
 
     }
@@ -52,7 +51,7 @@ public class EnemiesManager : MonoBehaviour
             aliens[indexAlien].GetComponent<Alien>().MakePattern();
 
          patternAlienMovement = Random.Range(2, 8);
-            Debug.Log("made alien at " + indexAlien + " moves");
+           /// Debug.Log("made alien at " + indexAlien + " moves");
          //   if (aliens == null) break;
 
         }
@@ -94,6 +93,8 @@ public class EnemiesManager : MonoBehaviour
 
             newAlien.GetComponent<Alien>().SetStartPosition(new Vector3((i * GameManager.Instance.horizontalEspacement) - limitationHorizontal, _positionY));
             newAlien.gameObject.SetActive(true);
+
+            GameManager.Instance.totalAlien++;
         }
 
 
@@ -132,4 +133,7 @@ public class EnemiesManager : MonoBehaviour
     {
         
     }
+
+
+   
 }

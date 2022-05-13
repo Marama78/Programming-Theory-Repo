@@ -24,7 +24,7 @@ public class Alien : MonoBehaviour
     private int coroutineState = 0;
 
     private int attackRate = 0;
-
+    private int lockerState = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -166,9 +166,15 @@ public class Alien : MonoBehaviour
                 break;
             case 7:
                 iteration = 2;
+                    lockerState = 0;
                 break;
             case 8:
                 iteration = 3;
+                if (lockerState == 0)
+                {
+                    targetMidle += new Vector3(0, -GameManager.Instance.verticalEspacement, 0);
+                    lockerState = 1;
+                }
                 break;
             case 9:
                 iteration = 2;
@@ -179,8 +185,8 @@ public class Alien : MonoBehaviour
                 pingpongState = 1;
                 break;
             case 11:
+                
                 return targetMidle;
-
             default:
                 Vector3 target = vStartPosition;
 
@@ -310,6 +316,7 @@ public class Alien : MonoBehaviour
     ///    Debug.Log("killed");
         GameManager.Instance.explosionParticles[currentExplosionParticles].gameObject.SetActive(false);
         Destroy(gameObject);
+        GameManager.Instance.totalAlien--;
 
     }
 

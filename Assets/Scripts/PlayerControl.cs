@@ -17,7 +17,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GameObject[] bullets;
     [SerializeField] private int currentIterationBullet = 0;
 
-    [SerializeField] private float speedAttack = 3.5f;
+     private float speedAttack = 0f;// 3.5f;
 
     [SerializeField] private bool canAttack = true;
 
